@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800');
+
+label {
+	font-weight: 500;
+	font-family: 'Fira Sans', sans-serif;
+	margin: 0px 0px;
+}
+
+button {
+	float: left;
+}
+.signUpForm {
+	width: 30%;
+	background-color: lightblue;
+	padding: 10px;
+	border-radius: 5px;
+	margin-right: 10%;
+}
+
+@media only screen and (max-width: 768px) {
+	.signUpForm {
+		width: 100%;
+		margin: 0;
+		padding: 5px;
+	}
+}
+
+.error {
+	color: red;
+}

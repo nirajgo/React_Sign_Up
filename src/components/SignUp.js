@@ -2,6 +2,7 @@ import React from 'react';
 import { Button, Container, Form } from 'react-bootstrap';
 import userService from '../services/user.service';
 import './signup.css';
+import CharacterDropDown from './HooksDropDown';
 
 export class SignUp extends React.Component {
 	constructor() {
@@ -12,7 +13,7 @@ export class SignUp extends React.Component {
 			email: null,
 			password: null,
 			dateOfBirth: null,
-			city: '5',
+			cityId: '2',
 			securityKeyword: null,
 			fileUpload: 'resume.pdf',
 			errors: {
@@ -80,7 +81,7 @@ export class SignUp extends React.Component {
 			email: this.state.email,
 			password: this.state.password,
 			dob: this.state.dateOfBirth,
-			c_id: this.state.city,
+			cityId: this.state.city,
 			certificates: this.state.fileUpload,
 			mothername: this.state.securityKeyword,
 		};
@@ -104,13 +105,13 @@ export class SignUp extends React.Component {
 
 	render() {
 		const { errors } = this.state;
-		const local_states = [
-			'Maharashtra',
-			'Tamilnadu',
-			'Gujrat',
-			'Punjab',
-			'Nagaland',
-		];
+		// const local_states = [
+		// 	'Maharashtra',
+		// 	'Tamilnadu',
+		// 	'Gujrat',
+		// 	'Punjab',
+		// 	'Nagaland',
+		// ];
 		return (
 			<Container className='signUpForm'>
 				<Form onSubmit={this.handleSubmit}>
@@ -163,6 +164,9 @@ export class SignUp extends React.Component {
 							onChange={this.handleChange}
 							required
 						/>
+						<p>
+							Search icon: <span className='fa fa-search'></span>
+						</p>
 						{errors.password !== null && (
 							<span className='error'>{errors.password}</span>
 						)}
@@ -175,14 +179,14 @@ export class SignUp extends React.Component {
 							onChange={this.handleChange}
 							required
 						/>
-						{errors.dateOfBirth.length > 0 && (
-							<span className='error'>{errors.dateOfBirth}</span>
-						)}
 						<small>Age must be 21 years and above.</small>
+						{errors.dateOfBirth.length > 0 && (
+							<p className='error'>{errors.dateOfBirth}</p>
+						)}
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Select Locality</Form.Label>
-						<select
+						{/* <select
 							className='form-control'
 							onChange={this.handleChange}
 							name='localState'>
@@ -190,7 +194,8 @@ export class SignUp extends React.Component {
 							{local_states.map((local_state) => (
 								<option key={local_state}>{local_state}</option>
 							))}
-						</select>
+						</select> */}
+						<CharacterDropDown />
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Upload certificate</Form.Label>
@@ -220,11 +225,10 @@ export class SignUp extends React.Component {
 						block
 					/>
 					<small>
-						<p>By clicking Create account, I agree that:</p>
-						<p>I have read and accepted the Terms of Use.</p>
-						The Adobe family of companies may keep me informed with personalized
-						emails about products and services. See our Privacy Policy for more
-						details or to opt-out at any time.
+						<p>
+							By clicking Create account, I agree that:I have read and accepted
+							the Terms of Use.
+						</p>
 					</small>
 				</Form>
 			</Container>

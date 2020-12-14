@@ -12,8 +12,9 @@ export class SignUp extends React.Component {
 			lastName: null,
 			email: null,
 			password: null,
+			confirmPassword: null,
 			dateOfBirth: null,
-			cityId: null,
+			cityId: 1,
 			securityKeyword: null,
 			fileUpload: null,
 			errors: {
@@ -21,6 +22,7 @@ export class SignUp extends React.Component {
 				lastName: '',
 				email: '',
 				password: '',
+				confirmPassword: '',
 				dateOfBirth: '',
 				fileUpload: '',
 			},
@@ -61,6 +63,13 @@ export class SignUp extends React.Component {
 				errors.password = validPassword.test(value)
 					? ''
 					: 'Minimum eight and maximum 10 characters, at least one uppercase letter, one lowercase letter, one number and one special character:';
+				break;
+			case 'confirmPassword':
+				const pass1 = this.state.password;
+				const pass2 = this.state.confirmPassword;
+				errors.confirmPassword = pass1.match(pass2)
+					? ''
+					: 'Password do not match!';
 				break;
 			case 'dateOfBirth':
 				const permittedAge = 21;
@@ -166,11 +175,20 @@ export class SignUp extends React.Component {
 							onChange={this.handleChange}
 							required
 						/>
-						<p>
-							Search icon: <span className='fa fa-search'></span>
-						</p>
 						{errors.password !== null && (
 							<span className='error'>{errors.password}</span>
+						)}
+					</Form.Group>
+					<Form.Group>
+						<Form.Label>Confirm Password</Form.Label>
+						<Form.Control
+							type='password'
+							name='confirmPassword'
+							onChange={this.handleChange}
+							required
+						/>
+						{errors.confirmPassword !== null && (
+							<span className='error'>{errors.confirmPassword}</span>
 						)}
 					</Form.Group>
 					<Form.Group>
@@ -197,7 +215,10 @@ export class SignUp extends React.Component {
 								<option key={local_state}>{local_state}</option>
 							))}
 						</select> */}
-						<CharacterDropDown getCityId={this.handleLanguageCode} />
+						<CharacterDropDown
+							cityId={this.state.cityId}
+							setCityId={this.state.cityId}
+						/>
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Upload certificate</Form.Label>
@@ -251,8 +272,8 @@ const validPassword = RegExp(
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/
 );
 
-//allows only pdf or doc type file
-const validFileExtension = RegExp(/^.*\.(doc|DOC|pdf|PDF)$/);
+//allows only pdf type file
+const validFileExtension = RegExp(/^.*\.(pdf|PDF)$/);
 
 const validDate = (date) => {
 	const newDate = new Date();

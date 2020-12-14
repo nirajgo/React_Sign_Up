@@ -13,15 +13,19 @@ export class SignUp extends React.Component {
 			email: null,
 			password: null,
 			dateOfBirth: null,
-			cityId: '2',
+			cityId: null,
 			securityKeyword: null,
-			fileUpload: 'resume.pdf',
+			fileUpload: null,
 			errors: {
 				firstName: '',
 				lastName: '',
 				email: '',
 				password: '',
 				dateOfBirth: '',
+				fileUpload: '',
+			},
+			handleLanguageCode: function (getId) {
+				this.setState({ cityId: getId });
 			},
 		};
 	}
@@ -36,7 +40,7 @@ export class SignUp extends React.Component {
 		switch (name) {
 			case 'firstName':
 				errors.firstName =
-					value.length <= 2
+					value.length < 2
 						? 'First name must be at least 2 characters long!'
 						: validName.test(value)
 						? ''
@@ -44,7 +48,7 @@ export class SignUp extends React.Component {
 				break;
 			case 'lastName':
 				errors.lastName =
-					value.length <= 2
+					value.length < 2
 						? 'Last name must be at least 2 characters long!'
 						: validName.test(value)
 						? ''
@@ -66,6 +70,11 @@ export class SignUp extends React.Component {
 						? ''
 						: 'Date of birth is not valid!';
 				break;
+			case 'fileUpload':
+				errors.fileUpload = validFileExtension.test(value)
+					? ''
+					: 'Invalid file type';
+				break;
 			default:
 				break;
 		}
@@ -81,14 +90,14 @@ export class SignUp extends React.Component {
 			email: this.state.email,
 			password: this.state.password,
 			dob: this.state.dateOfBirth,
-			cityId: this.state.city,
+			cityId: this.state.cityId,
 			certificates: this.state.fileUpload,
 			mothername: this.state.securityKeyword,
 		};
 		if (validateForm(this.state.errors)) {
-			console.info(
+			console.log(
 				'Valid Form',
-				this.state.dateOfBirth + ' c_id' + this.state.city
+				this.state.dateOfBirth + ' c_id' + this.state.cityId
 			);
 			userService
 				.createUser(data)
@@ -105,13 +114,6 @@ export class SignUp extends React.Component {
 
 	render() {
 		const { errors } = this.state;
-		// const local_states = [
-		// 	'Maharashtra',
-		// 	'Tamilnadu',
-		// 	'Gujrat',
-		// 	'Punjab',
-		// 	'Nagaland',
-		// ];
 		return (
 			<Container className='signUpForm'>
 				<Form onSubmit={this.handleSubmit}>
@@ -195,7 +197,7 @@ export class SignUp extends React.Component {
 								<option key={local_state}>{local_state}</option>
 							))}
 						</select> */}
-						<CharacterDropDown />
+						<CharacterDropDown getCityId={this.handleLanguageCode} />
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Upload certificate</Form.Label>
@@ -206,6 +208,9 @@ export class SignUp extends React.Component {
 							required
 						/>
 						<small>Upload certificate in PDF format only.</small>
+						{errors.fileUpload.length > 0 && (
+							<p className='error'>{errors.fileUpload}</p>
+						)}
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Mother's Name</Form.Label>
@@ -246,7 +251,8 @@ const validPassword = RegExp(
 	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/
 );
 
-const validFileExtension = RegExp(/^.*\.(jpg|JPG|gif|GIF|doc|DOC|pdf|PDF)$/);
+//allows only pdf or doc type file
+const validFileExtension = RegExp(/^.*\.(doc|DOC|pdf|PDF)$/);
 
 const validDate = (date) => {
 	const newDate = new Date();

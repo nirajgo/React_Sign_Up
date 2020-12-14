@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import localityService from '../services/locality.service';
 
-const CharacterDropDown = () => {
+const CharacterDropDown = (props) => {
 	const [states, setStates] = useState([]);
 	const [cities, setCities] = useState([]);
-	const [selectedState, setChangeState] = useState(null);
-	const [selectedCity, setChangeCity] = useState(null);
+	// const [selectedCity, setChangeCity] = useState(null);
 	const [filteredCities, setFilteredCities] = useState([]);
 
 	useEffect(() => {
 		async function getLocality() {
 			const stateResponse = await localityService.getStates();
-			const cityResponse = await localityService.getCities();
-			// console.log(stateResponse.data);
-			// console.log(cityResponse.data);
+			const cityResponse = await localityService.getCitiesByState();
 
 			setStates(
 				stateResponse.data.map((data) => ({
@@ -29,22 +26,27 @@ const CharacterDropDown = () => {
 				}))
 			);
 		}
+
 		getLocality();
 	}, []);
 
 	const onChangeHandler = (event) => {
-		setChangeState(event.target.value);
-		let mycity = [];
-		for (let i = 0; i < cities.length; i++) {
-			if (cities[i].cityStateId === selectedState) {
-				mycity.push(cities[i]);
-				console.log(cities[i].cityName);
-			}
-		}
-		setFilteredCities(mycity);
+		// console.log(cities.filter((city) => city.cityStateId === selectedState));
+		const filtered = cities.filter(
+			(city) => city.cityStateId === parseInt(event.target.value)
+		);
+		setFilteredCities(filtered);
 	};
+
+	const handleLanguageCode = (e) => {
+		console.log(e.target.value);
+		let lang = parseInt(e.target.value);
+		this.props.getCityId(lang);
+		console.log(e.target.value);
+	};
+
 	console.log(filteredCities);
-	// const newCities = cities.find((city) => city.s_id === selectedState).states;
+	// console.log(selectedCity);
 
 	return (
 		<div>
@@ -57,14 +59,13 @@ const CharacterDropDown = () => {
 			</select>
 			<select
 				className='form-control'
-				onChange={(e) => setChangeCity(e.target.value)}>
-				{cities.map(({ cityId, cityName }) => {
-					return (
-						<option key={cityId} value={cityId}>
-							{cityName}
-						</option>
-					);
-				})}
+				// onChange={(e) => setChangeCity(e.target.value)}
+				onChange={handleLanguageCode}>
+				{filteredCities.map(({ cityId, cityName }) => (
+					<option key={cityId} value={cityId} defaultChecked>
+						{cityName}
+					</option>
+				))}
 			</select>
 		</div>
 	);

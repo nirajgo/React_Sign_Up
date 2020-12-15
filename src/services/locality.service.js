@@ -5,7 +5,7 @@ class LocalityDataService {
 		return http.get('/states');
 	}
 	getCitiesByState() {
-		return http.get(`/cities`);
+		return http.get('/cities');
 	}
 }
 

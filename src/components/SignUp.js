@@ -29,19 +29,11 @@ export class SignUp extends React.Component {
 				fileUpload: '',
 			},
 		};
-		this.updateState = this.updateState.bind(this);
 	}
 
-	updateState(value) {
-		if (value !== null) {
-			this.setState({ cityId: value });
-		}
-	}
 	//handlechange
 	handleChange = (event) => {
-		event.preventDefault();
-		//destructuring
-
+		console.log(this.state.password);
 		const { name, value } = event.target;
 		let errors = this.state.errors;
 		switch (name) {
@@ -111,7 +103,7 @@ export class SignUp extends React.Component {
 		if (validateForm(this.state.errors)) {
 			console.log(
 				'Valid Form',
-				this.state.dateOfBirth + ' c_id' + this.state.cityId
+				this.state.dateOfBirth + ' c_id: ' + this.state.cityId
 			);
 			userService
 				.createUser(data)
@@ -172,7 +164,7 @@ export class SignUp extends React.Component {
 							<span className='error'>{errors.email}</span>
 						)}
 					</Form.Group>
-					<Form.Group>
+					{/* <Form.Group>
 						<Form.Label>Password</Form.Label>
 						<Form.Control
 							type='password'
@@ -183,7 +175,23 @@ export class SignUp extends React.Component {
 						{errors.password !== null && (
 							<span className='error'>{errors.password}</span>
 						)}
-						{/* <PasswordShowHide /> */}
+
+					</Form.Group> */}
+					<Form.Group>
+						<Form.Label>Password</Form.Label>
+						{/* <Form.Control
+							type='password'
+							name='password'
+							onChange={this.handleChange}
+							required
+						/> */}
+						<PasswordShowHide
+							getPassword={(value) => this.setState({ password: value })}
+							onChange={this.handleChange}
+						/>
+						{errors.password !== null && (
+							<span className='error'>{errors.password}</span>
+						)}
 					</Form.Group>
 					{/* <Form.Group>
 						<Form.Label>Confirm Password</Form.Label>
@@ -193,9 +201,11 @@ export class SignUp extends React.Component {
 							onChange={this.handleChange}
 							required
 						/>
+
 						{errors.confirmPassword !== null && (
 							<span className='error'>{errors.confirmPassword}</span>
 						)}
+
 					</Form.Group> */}
 					<Form.Group>
 						<Form.Label>Date of Birth</Form.Label>

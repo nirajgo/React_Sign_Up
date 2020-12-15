@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import localityService from '../services/locality.service';
 
-const CharacterDropDown = (props) => {
+const CharacterDropDown = ({ getValue }) => {
 	const [states, setStates] = useState([]);
 	const [cities, setCities] = useState([]);
 	const [filteredCities, setFilteredCities] = useState([]);
-	const [selectedCity, setChangeCity] = useState(null);
 
 	useEffect(() => {
 		async function getLocality() {
@@ -30,26 +29,20 @@ const CharacterDropDown = (props) => {
 	}, []);
 
 	const onChangeHandler = (event) => {
-		// console.log(cities.filter((city) => city.cityStateId === selectedState));
 		const filtered = cities.filter(
 			(city) => city.cityStateId === parseInt(event.target.value)
 		);
 		setFilteredCities(filtered);
 	};
 
-	const handleLanguageCode = (e) => {
-		console.log(e.target.value + ' c_id: ');
-		// props.cityId = e.target.value;
-		console.log(props.cityId);
+	const handleCityIdChange = (e) => {
+		const cityValue = parseInt(e.target.value);
+		getValue(cityValue);
 	};
-
-	console.log(filteredCities);
-	console.log(props.setCityId);
-	// console.log(selectedCity);
 
 	return (
 		<div>
-			<select className='form-control' onChange={onChangeHandler}>
+			<select className='form-control' onChange={onChangeHandler} required>
 				<option defaultChecked>--Select State--</option>
 				{states.map(({ stateId, stateName }) => (
 					<option key={stateId} value={stateId}>
@@ -57,10 +50,7 @@ const CharacterDropDown = (props) => {
 					</option>
 				))}
 			</select>
-			<select
-				className='form-control'
-				// onChange={(e) => setChangeCity(e.target.value)}
-				onChange={handleLanguageCode}>
+			<select className='form-control' onChange={handleCityIdChange} required>
 				<option defaultChecked>--Select City--</option>
 				{filteredCities.map(({ cityId, cityName }) => (
 					<option key={cityId} value={cityId}>

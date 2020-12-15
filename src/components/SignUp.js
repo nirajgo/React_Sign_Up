@@ -3,10 +3,12 @@ import { Button, Container, Form } from 'react-bootstrap';
 import userService from '../services/user.service';
 import './signup.css';
 import CharacterDropDown from './HooksDropDown';
+import PasswordShowHide from './PasswordShowHide';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export class SignUp extends React.Component {
-	constructor() {
-		super();
+	constructor(props) {
+		super(props);
 		this.state = {
 			firstName: null,
 			lastName: null,
@@ -14,7 +16,7 @@ export class SignUp extends React.Component {
 			password: null,
 			confirmPassword: null,
 			dateOfBirth: null,
-			cityId: 1,
+			cityId: null,
 			securityKeyword: null,
 			fileUpload: null,
 			errors: {
@@ -26,12 +28,15 @@ export class SignUp extends React.Component {
 				dateOfBirth: '',
 				fileUpload: '',
 			},
-			handleLanguageCode: function (getId) {
-				this.setState({ cityId: getId });
-			},
 		};
+		this.updateState = this.updateState.bind(this);
 	}
 
+	updateState(value) {
+		if (value !== null) {
+			this.setState({ cityId: value });
+		}
+	}
 	//handlechange
 	handleChange = (event) => {
 		event.preventDefault();
@@ -99,7 +104,7 @@ export class SignUp extends React.Component {
 			email: this.state.email,
 			password: this.state.password,
 			dob: this.state.dateOfBirth,
-			cityId: this.state.cityId,
+			c_id: this.state.cityId,
 			certificates: this.state.fileUpload,
 			mothername: this.state.securityKeyword,
 		};
@@ -124,7 +129,7 @@ export class SignUp extends React.Component {
 	render() {
 		const { errors } = this.state;
 		return (
-			<Container className='signUpForm'>
+			<div className='signUpForm'>
 				<Form onSubmit={this.handleSubmit}>
 					<h1>Create an account</h1>
 					<h6>
@@ -178,8 +183,9 @@ export class SignUp extends React.Component {
 						{errors.password !== null && (
 							<span className='error'>{errors.password}</span>
 						)}
+						{/* <PasswordShowHide /> */}
 					</Form.Group>
-					<Form.Group>
+					{/* <Form.Group>
 						<Form.Label>Confirm Password</Form.Label>
 						<Form.Control
 							type='password'
@@ -190,7 +196,7 @@ export class SignUp extends React.Component {
 						{errors.confirmPassword !== null && (
 							<span className='error'>{errors.confirmPassword}</span>
 						)}
-					</Form.Group>
+					</Form.Group> */}
 					<Form.Group>
 						<Form.Label>Date of Birth</Form.Label>
 						<Form.Control
@@ -206,18 +212,8 @@ export class SignUp extends React.Component {
 					</Form.Group>
 					<Form.Group>
 						<Form.Label>Select Locality</Form.Label>
-						{/* <select
-							className='form-control'
-							onChange={this.handleChange}
-							name='localState'>
-							<option defaultValue>Select State</option>
-							{local_states.map((local_state) => (
-								<option key={local_state}>{local_state}</option>
-							))}
-						</select> */}
 						<CharacterDropDown
-							cityId={this.state.cityId}
-							setCityId={this.state.cityId}
+							getValue={(value) => this.setState({ cityId: value })}
 						/>
 					</Form.Group>
 					<Form.Group>
@@ -257,7 +253,7 @@ export class SignUp extends React.Component {
 						</p>
 					</small>
 				</Form>
-			</Container>
+			</div>
 		);
 	}
 }
@@ -278,16 +274,11 @@ const validFileExtension = RegExp(/^.*\.(pdf|PDF)$/);
 const validDate = (date) => {
 	const newDate = new Date();
 	const userDate = new Date(date);
-	console.log(userDate + ' ' + date);
-
 	// To calculate the time difference of two dates
 	const Difference_In_Time = newDate.getTime() - userDate.getTime();
-
 	// To calculate the no. of days between two dates
 	const Difference_In_Days = Math.ceil(Difference_In_Time / (1000 * 3600 * 24));
-
 	// return Difference_In_Days >= totalDaysToAge ? true : false;
-
 	return Difference_In_Days;
 };
 

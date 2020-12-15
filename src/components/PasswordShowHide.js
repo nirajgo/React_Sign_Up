@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 class PasswordShowHide extends Component {
 	constructor(props) {
 		super(props);
@@ -16,11 +16,11 @@ class PasswordShowHide extends Component {
 	toggleShow() {
 		this.setState({ hidden: !this.state.hidden });
 	}
-	componentDidMount() {
-		if (this.props.password) {
-			this.setState({ password: this.props.password });
-		}
-	}
+	// componentDidMount() {
+	// 	if (this.props.password) {
+	// 		this.setState({ password: this.props.password });
+	// 	}
+	// }
 	render() {
 		return (
 			<Form.Group>
@@ -29,7 +29,9 @@ class PasswordShowHide extends Component {
 					value={this.state.password}
 					onChange={this.handlePasswordChange}
 				/>
-				<button onClick={this.toggleShow}>Show / Hide</button>
+				<Button onClick={this.toggleShow} size='sm'>
+					Show / Hide
+				</Button>
 			</Form.Group>
 		);
 	}

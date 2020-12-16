@@ -1,57 +1,52 @@
+/* eslint-disable linebreak-style */
 import React, { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import UserService from '../services/user.service';
-import CharacterDropDown from './HooksDropDown';
+import LocalityDropDown from './LocalityDropDown';
 import PasswordShowHide from './PasswordShowHide';
+import './signup.css';
 
 const RegisterUser = () => {
 	const initialState = {
-		user: {
-			firstName: null,
-			lastName: null,
-			email: null,
-			password: null,
-			confirmPassword: null,
-			dateOfBirth: null,
-			cityId: null,
-			securityKeyword: null,
-			fileUpload: null,
-		},
-		errors: {
-			firstName: '',
-			lastName: '',
-			email: '',
-			password: '',
-			confirmPassword: '',
-			dateOfBirth: '',
-			fileUpload: '',
-		},
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: '',
+		dateOfBirth: '',
+		securityKeyword: '',
+		cityId: '',
+	};
+	const formErrors = {
+		firstName: '',
+		lastName: '',
+		email: '',
+		password: '',
+		cityId: '',
+		dateOfBirth: '',
+		fileUpload: '',
 	};
 	const [userData, setUserData] = useState(initialState);
-	const updateField = (e) => {
-		setUserData({
-			...userData,
-			[e.target.name]: e.target.value,
-		});
-	};
-	// const [errors, setErrors] = useState(initialErrors);
-	const errors = userData.errors;
+	const [errors, setErrors] = useState(formErrors);
+	const [file, setFile] = useState('');
+	const [checkMail, setCheckMail] = useState([]);
+
 	const handleChange = (event) => {
 		const { name, value } = event.target;
+		setUserData({ ...userData, [name]: value });
+
+		console.log(checkMail);
 		switch (name) {
 			case 'firstName':
-				errors.firstName =
-					value.length < 2
-						? 'First name must be at least 2 characters long!'
-						: validName.test(value)
+				errors.firstName = value.length < 2
+					? 'First name must be at least 2 characters long!'
+					: validName.test(value)
 						? ''
 						: 'Name is not valid';
 				break;
 			case 'lastName':
-				errors.lastName =
-					value.length < 2
-						? 'Last name must be at least 2 characters long!'
-						: validName.test(value)
+				errors.lastName = value.length < 2
+					? 'Last name must be at least 2 characters long!'
+					: validName.test(value)
 						? ''
 						: 'Name is not valid';
 				break;
@@ -63,22 +58,15 @@ const RegisterUser = () => {
 					? ''
 					: 'Minimum eight and maximum 10 characters, at least one uppercase letter, one lowercase letter, one number and one special character:';
 				break;
-			case 'confirmPassword':
-				const pass1 = userData.password;
-				const pass2 = userData.confirmPassword;
-				errors.confirmPassword = pass1.match(pass2)
-					? ''
-					: 'Password do not match!';
-				break;
 			case 'dateOfBirth':
 				const permittedAge = 21;
 				const totalDaysToAge = permittedAge * 365;
-				errors.dateOfBirth =
-					validDate(value) > totalDaysToAge
-						? ''
-						: 'Date of birth is not valid!';
+				errors.dateOfBirth = validDate(value) > totalDaysToAge
+					? ''
+					: 'Date of birth is not valid!';
 				break;
 			case 'fileUpload':
+				setFile(event.target.files[0]);
 				errors.fileUpload = validFileExtension.test(value)
 					? ''
 					: 'Invalid file type';
@@ -86,22 +74,26 @@ const RegisterUser = () => {
 			default:
 				break;
 		}
-		setUserData({ errors, [name]: value });
+		setErrors(errors);
 	};
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		let data = {
-			fname: userData.firstName,
-			lname: userData.lastName,
-			email: userData.email,
-			password: userData.password,
-			dob: userData.dateOfBirth,
-			c_id: userData.cityId,
-			certificates: userData.fileUpload,
-			mothername: userData.securityKeyword,
-		};
+		console.log(userData);
+		console.log(`C_ID: ${userData.cityId}`);
+
+		const formData = new FormData();
+		formData.append('fname', userData.firstName);
+		formData.append('lname', userData.lastName);
+		formData.append('email', userData.email);
+		formData.append('password', userData.password);
+		formData.append('dob', userData.dateOfBirth);
+		formData.append('c_id', userData.cityId);
+		formData.append('mothername', userData.mothername);
+		formData.append('certificates', file.name);
+		formData.append('file', file);
+
 		if (validateForm(errors)) {
-			UserService.createUser(data)
+			UserService.createUser(formData)
 				.then(() => {
 					console.info('Valid Form', userData.firstName);
 				})
@@ -113,165 +105,145 @@ const RegisterUser = () => {
 		}
 	};
 
+	// const onBLurChange = (e) => {
+	// 	e.preventDefault();
+	// 	const myMail = e.target.value;
+	// 	UserService.checkIfUserMailExist(myMail)
+	// 		.then((data) => {
+	// 			console.log(data);
+	// 		})
+	// 		.catch((err) => {
+	// 			console.log(err);
+	// 		});
+	// 	console.log(myMail);
+	// 	// if (typeof response.data !== null) setCheckMail(true);
+	// };
+
 	return (
-		<div className='signUpForm'>
+		<div className="signUpForm">
 			<Form onSubmit={handleSubmit}>
 				<h1>Create an account</h1>
 				<h6>
-					Already a member? <a href='./success.html'> Login here.</a>
+					Already a member?
+					<a href="./success.html"> Login here.</a>
 				</h6>
 				<Form.Group>
 					<Form.Label>First name</Form.Label>
 					<Form.Control
-						type='text'
-						name='firstName'
+						type="text"
+						name="firstName"
+						value={userData.firstName}
 						onChange={handleChange}
 						required
 						autoFocus
 					/>
 					{errors.firstName.length > 0 && (
-						<span className='error'>{errors.firstName}</span>
+						<span className="error">{errors.firstName}</span>
 					)}
 				</Form.Group>
 				<Form.Group>
 					<Form.Label>Last name</Form.Label>
 					<Form.Control
-						type='text'
-						name='lastName'
+						type="text"
+						name="lastName"
+						value={userData.lastName}
 						onChange={handleChange}
 						required
 					/>
 					{errors.lastName.length > 0 && (
-						<span className='error'>{errors.lastName}</span>
+						<span className="error">{errors.lastName}</span>
 					)}
 				</Form.Group>
 				<Form.Group>
 					<Form.Label>Email</Form.Label>
 					<Form.Control
-						type='email'
-						name='email'
+						type="email"
+						name="email"
+						value={userData.email}
 						onChange={handleChange}
+						// onBlur={onBLurChange}
 						required
 					/>
 					{errors.email.length > 0 && (
-						<span className='error'>{errors.email}</span>
+						<span className="error">{errors.email}</span>
 					)}
 				</Form.Group>
-				{/* <Form.Group>
-						<Form.Label>Password</Form.Label>
-						<Form.Control
-							type='password'
-							name='password'
-							onChange={handleChange}
-							required
-						/>
-						{errors.password !== null && (
-							<span className='error'>{errors.password}</span>
-						)}
-
-					</Form.Group> */}
 				<Form.Group>
-					<Form.Label>Password</Form.Label>
-					{/* <Form.Control
-							type='password'
-							name='password'
-							onChange={handleChange}
-							required
-						/> */}
-					<PasswordShowHide
-						getPassword={(value) =>
-							setUserData(...userData, { password: value })
-						}
-						onChange={handleChange}
-					/>
+					<PasswordShowHide onChange={handleChange} />
 					{errors.password !== null && (
-						<span className='error'>{errors.password}</span>
+						<span className="error">{errors.password}</span>
 					)}
 				</Form.Group>
-				{/* <Form.Group>
-						<Form.Label>Confirm Password</Form.Label>
-						<Form.Control
-							type='password'
-							name='confirmPassword'
-							onChange={handleChange}
-							required
-						/>
 
-						{errors.confirmPassword !== null && (
-							<span className='error'>{errors.confirmPassword}</span>
-						)}
-
-					</Form.Group> */}
 				<Form.Group>
 					<Form.Label>Date of Birth</Form.Label>
 					<Form.Control
-						type='date'
-						name='dateOfBirth'
+						type="date"
+						name="dateOfBirth"
+						value={userData.dateOfBirth}
 						onChange={handleChange}
 						required
 					/>
 					<small>Age must be 21 years and above.</small>
 					{errors.dateOfBirth.length > 0 && (
-						<p className='error'>{errors.dateOfBirth}</p>
+						<p className="error">{errors.dateOfBirth}</p>
 					)}
 				</Form.Group>
-				<Form.Group>
-					<Form.Label>Select Locality</Form.Label>
-					<CharacterDropDown
-						getValue={(value) => setUserData({ cityId: value })}
-					/>
-				</Form.Group>
+
+				<LocalityDropDown onChange={handleChange} />
+
 				<Form.Group>
 					<Form.Label>Upload certificate</Form.Label>
 					<Form.Control
-						type='file'
-						name='fileUpload'
+						type="file"
+						name="fileUpload"
+						value={userData.fileUpload}
 						onChange={handleChange}
 						required
 					/>
 					<small>Upload certificate in PDF format only.</small>
 					{errors.fileUpload.length > 0 && (
-						<p className='error'>{errors.fileUpload}</p>
+						<p className="error">{errors.fileUpload}</p>
 					)}
 				</Form.Group>
 				<Form.Group>
 					<Form.Label>Mother's Name</Form.Label>
 					<Form.Control
-						type='text'
-						name='securityKeyword'
+						type="text"
+						name="securityKeyword"
+						value={userData.securityKeyword}
 						onChange={handleChange}
 						required
 					/>
 					<small>We are collecting mother's name for security purpose.</small>
 				</Form.Group>
 				<Button
-					as='input'
-					type='submit'
-					value='Create account'
-					variant='success'
+					as="input"
+					type="submit"
+					value="Create account"
+					variant="success"
 					block
 				/>
 				<small>
 					<p>
 						By clicking Create account, I agree that:I have read and accepted
 						the Terms of Use.
-					</p>
+          </p>
 				</small>
 			</Form>
 		</div>
 	);
 };
-const validEmailRegex = RegExp(
-	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
-);
 
 const validName = RegExp(/^[a-z,.'-]+$/i);
 
 const validPassword = RegExp(
-	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/
+	/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/,
 );
-
-//allows only pdf type file
+const validEmailRegex = RegExp(
+	/^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i,
+);
+// allows only pdf type file
 const validFileExtension = RegExp(/^.*\.(pdf|PDF)$/);
 
 const validDate = (date) => {
@@ -289,7 +261,7 @@ const validateForm = (errors) => {
 	let valid = true;
 	Object.values(errors).forEach(
 		// if we have an error string set valid to false
-		(val) => val.length > 0 && (valid = false)
+		(val) => val.length > 0 && (valid = false),
 	);
 	return valid;
 };

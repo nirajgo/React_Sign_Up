@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import UserService from '../services/user.service';
 import LocalityDropDown from './LocalityDropDown';
 import PasswordShowHide from './PasswordShowHide';
-import './signup.css';
+import './register_user.css';
 
 const RegisterUser = () => {
 	const initialState = {
@@ -28,13 +28,12 @@ const RegisterUser = () => {
 	const [userData, setUserData] = useState(initialState);
 	const [errors, setErrors] = useState(formErrors);
 	const [file, setFile] = useState('');
-	const [checkMail, setCheckMail] = useState([]);
+	const [ifExistsMail, setIfExistsMail] = useState([]);
 
 	const handleChange = (event) => {
 		const { name, value } = event.target;
 		setUserData({ ...userData, [name]: value });
 
-		console.log(checkMail);
 		switch (name) {
 			case 'firstName':
 				errors.firstName = value.length < 2
@@ -49,9 +48,6 @@ const RegisterUser = () => {
 					: validName.test(value)
 						? ''
 						: 'Name is not valid';
-				break;
-			case 'email':
-				errors.email = validEmailRegex.test(value) ? '' : 'Email is not valid!';
 				break;
 			case 'password':
 				errors.password = validPassword.test(value)
@@ -88,7 +84,7 @@ const RegisterUser = () => {
 		formData.append('password', userData.password);
 		formData.append('dob', userData.dateOfBirth);
 		formData.append('c_id', userData.cityId);
-		formData.append('mothername', userData.mothername);
+		formData.append('mothername', userData.securityKeyword);
 		formData.append('certificates', file.name);
 		formData.append('file', file);
 
@@ -96,6 +92,7 @@ const RegisterUser = () => {
 			UserService.createUser(formData)
 				.then(() => {
 					console.info('Valid Form', userData.firstName);
+					setUserData(initialState);
 				})
 				.catch((e) => {
 					console.log(e);
@@ -105,132 +102,145 @@ const RegisterUser = () => {
 		}
 	};
 
-	// const onBLurChange = (e) => {
-	// 	e.preventDefault();
-	// 	const myMail = e.target.value;
-	// 	UserService.checkIfUserMailExist(myMail)
-	// 		.then((data) => {
-	// 			console.log(data);
-	// 		})
-	// 		.catch((err) => {
-	// 			console.log(err);
-	// 		});
-	// 	console.log(myMail);
-	// 	// if (typeof response.data !== null) setCheckMail(true);
-	// };
+	const onBLurChange = (e) => {
+		e.preventDefault();
+		const myJson = JSON.stringify({ checkMail: e.target.value });
+		UserService.checkIfUserMailExist(myJson)
+			.then((res) => {
+				setIfExistsMail(res.data);
+				console.log(res.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+		if (e.target.name === "email") errors.email = validateEmail(e.target.value);
+	};
 
+	const validateEmail = (value) => {
+		if (validEmailRegex.test(value)) {
+			if (ifExistsMail.length !== 0) {
+				return "Email already exists!";
+			} else {
+				return true;
+			}
+		}
+		return "Email is invalid";
+	};
 	return (
-		<div className="signUpForm">
-			<Form onSubmit={handleSubmit}>
-				<h1>Create an account</h1>
-				<h6>
-					Already a member?
+		<div className="backgroundImage">
+			<div className="signUpForm">
+				<Form onSubmit={handleSubmit}>
+					<h1>Create an account</h1>
+					<h6>
+						Already a member?
 					<a href="./success.html"> Login here.</a>
-				</h6>
-				<Form.Group>
-					<Form.Label>First name</Form.Label>
-					<Form.Control
-						type="text"
-						name="firstName"
-						value={userData.firstName}
-						onChange={handleChange}
-						required
-						autoFocus
-					/>
-					{errors.firstName.length > 0 && (
-						<span className="error">{errors.firstName}</span>
-					)}
-				</Form.Group>
-				<Form.Group>
-					<Form.Label>Last name</Form.Label>
-					<Form.Control
-						type="text"
-						name="lastName"
-						value={userData.lastName}
-						onChange={handleChange}
-						required
-					/>
-					{errors.lastName.length > 0 && (
-						<span className="error">{errors.lastName}</span>
-					)}
-				</Form.Group>
-				<Form.Group>
-					<Form.Label>Email</Form.Label>
-					<Form.Control
-						type="email"
-						name="email"
-						value={userData.email}
-						onChange={handleChange}
-						// onBlur={onBLurChange}
-						required
-					/>
-					{errors.email.length > 0 && (
-						<span className="error">{errors.email}</span>
-					)}
-				</Form.Group>
-				<Form.Group>
-					<PasswordShowHide onChange={handleChange} />
-					{errors.password !== null && (
-						<span className="error">{errors.password}</span>
-					)}
-				</Form.Group>
+					</h6>
+					<Form.Group>
+						<Form.Label>First name</Form.Label>
+						<Form.Control
+							type="text"
+							name="firstName"
+							value={userData.firstName}
+							onChange={handleChange}
+							required
+							autoFocus
+						/>
+						{errors.firstName.length > 0 && (
+							<span className="error">{errors.firstName}</span>
+						)}
+					</Form.Group>
+					<Form.Group>
+						<Form.Label>Last name</Form.Label>
+						<Form.Control
+							type="text"
+							name="lastName"
+							value={userData.lastName}
+							onChange={handleChange}
+							required
+						/>
+						{errors.lastName.length > 0 && (
+							<span className="error">{errors.lastName}</span>
+						)}
+					</Form.Group>
+					<Form.Group>
+						<Form.Label>Email</Form.Label>
+						<Form.Control
+							type="email"
+							name="email"
+							value={userData.email}
+							onChange={handleChange}
+							onBlur={onBLurChange}
+							required
+							autoComplete='false'
+						/>
+						{errors.email.length > 0 && (
+							<span className="error">{errors.email}</span>
+						)}
+					</Form.Group>
+					<Form.Group>
+						<PasswordShowHide onChange={handleChange} />
+						{errors.password !== null && (
+							<span className="error">{errors.password}</span>
+						)}
+					</Form.Group>
 
-				<Form.Group>
-					<Form.Label>Date of Birth</Form.Label>
-					<Form.Control
-						type="date"
-						name="dateOfBirth"
-						value={userData.dateOfBirth}
-						onChange={handleChange}
-						required
-					/>
-					<small>Age must be 21 years and above.</small>
-					{errors.dateOfBirth.length > 0 && (
-						<p className="error">{errors.dateOfBirth}</p>
-					)}
-				</Form.Group>
+					<Form.Group>
+						<Form.Label>Date of Birth</Form.Label>
+						<Form.Control
+							type="date"
+							name="dateOfBirth"
+							value={userData.dateOfBirth}
+							onChange={handleChange}
+							required
+						/>
+						<small>Age must be 21 years and above.</small>
+						{errors.dateOfBirth.length > 0 && (
+							<p className="error">{errors.dateOfBirth}</p>
+						)}
+					</Form.Group>
 
-				<LocalityDropDown onChange={handleChange} />
+					<LocalityDropDown onChange={handleChange} />
 
-				<Form.Group>
-					<Form.Label>Upload certificate</Form.Label>
-					<Form.Control
-						type="file"
-						name="fileUpload"
-						value={userData.fileUpload}
-						onChange={handleChange}
-						required
+					<Form.Group>
+						<Form.Label>Upload certificate</Form.Label>
+						<Form.Control
+							type="file"
+							name="fileUpload"
+							value={userData.fileUpload}
+							onChange={handleChange}
+							required
+						/>
+						<small>Upload certificate in PDF format only.</small>
+						{errors.fileUpload.length > 0 && (
+							<p className="error">{errors.fileUpload}</p>
+						)}
+					</Form.Group>
+					<Form.Group>
+						<Form.Label>Mother's Name</Form.Label>
+						<Form.Control
+							type="text"
+							name="securityKeyword"
+							value={userData.securityKeyword}
+							onChange={handleChange}
+							required
+						/>
+						<small>We are collecting mother's name for security purpose.</small>
+					</Form.Group>
+					<Button
+						as="input"
+						type="submit"
+						value="Create account"
+						variant="success"
+						block
 					/>
-					<small>Upload certificate in PDF format only.</small>
-					{errors.fileUpload.length > 0 && (
-						<p className="error">{errors.fileUpload}</p>
-					)}
-				</Form.Group>
-				<Form.Group>
-					<Form.Label>Mother's Name</Form.Label>
-					<Form.Control
-						type="text"
-						name="securityKeyword"
-						value={userData.securityKeyword}
-						onChange={handleChange}
-						required
-					/>
-					<small>We are collecting mother's name for security purpose.</small>
-				</Form.Group>
-				<Button
-					as="input"
-					type="submit"
-					value="Create account"
-					variant="success"
-					block
-				/>
-				<small>
-					<p>
-						By clicking Create account, I agree that:I have read and accepted
-						the Terms of Use.
+					<small>
+						<p>
+							By clicking Create account, I agree that:I have read and accepted
+							the Terms of Use.
           </p>
-				</small>
-			</Form>
+					</small>
+				</Form>
+			</div>
 		</div>
 	);
 };

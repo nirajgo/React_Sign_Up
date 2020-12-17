@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,500,600,700,800');
 
+.backgroundImage {
+	background-image: url('../Assets/news4.jpg');
+	background-color: #303952;
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
 label {
 	font-weight: 400;
 	font-family: 'Fira Sans', sans-serif;

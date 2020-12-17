@@ -5,7 +5,7 @@ class UserDataService {
 		return http.post('/users', data);
 	}
 	checkIfUserMailExist(mail) {
-		return http.get('/users/mails', mail);
+		return http.post("/users/checkmail", mail);
 	}
 }
 

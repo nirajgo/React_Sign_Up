@@ -1,0 +1,30 @@
+/* .outerWrapper {
+	padding: 10px;
+	margin: auto 0;
+	background-color: grey;
+} */
+.com {
+	background-color: white;
+	margin: 5px;
+}
+
+.category {
+	background-color: antiquewhite;
+	height: auto;
+}
+
+.title {
+	background-color: antiquewhite;
+	font: bold 1.6rem Arial;
+	text-transform: capitalize;
+}
+
+.description {
+	font: italic 0.9rem Arial;
+}
+.author-date {
+	font: 20px 0.9rem Arial;
+}
+
+.newsImage {
+}

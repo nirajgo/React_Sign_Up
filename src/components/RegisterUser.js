@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 import UserService from '../services/user.service';
 import LocalityDropDown from './LocalityDropDown';
 import PasswordShowHide from './PasswordShowHide';
-import './register_user.css';
+// import './register_user.css';
 
 const RegisterUser = () => {
 	const initialState = {
@@ -102,6 +102,7 @@ const RegisterUser = () => {
 		}
 	};
 
+	//check if user is already register
 	const onBLurChange = (e) => {
 		e.preventDefault();
 		const myJson = JSON.stringify({ checkMail: e.target.value });
@@ -116,6 +117,7 @@ const RegisterUser = () => {
 		if (e.target.name === "email") errors.email = validateEmail(e.target.value);
 	};
 
+	//email validation
 	const validateEmail = (value) => {
 		if (validEmailRegex.test(value)) {
 			if (ifExistsMail.length !== 0) {

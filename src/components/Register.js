@@ -35,8 +35,8 @@ export class Register extends Component {
 					value.length < 8
 						? 'Password must be 8 characters long!'
 						: value.length > 10
-						? 'Password must be 10 characters long!'
-						: '';
+							? 'Password must be 10 characters long!'
+							: '';
 				break;
 			default:
 				break;

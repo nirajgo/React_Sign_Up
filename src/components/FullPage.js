@@ -4,14 +4,7 @@ import "./full_page.css";
 function FullPage() {
     return (
         <>
-            {/* <div className="outerWrapper">
-        <div className="category">Category</div>
-        <div className="title">Title</div>
-        <div className="description">Description</div>
-        <div className="author-date">author date</div>
-        <div className="newsImage">Image</div>
-        <div className="mainContent">mainContent</div>
-      </div> */}
+
             <div className="outerWrapper">
                 <Row>
                     <Col className="com category" xs="auto">
